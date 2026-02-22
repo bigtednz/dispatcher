@@ -1,0 +1,134 @@
+// Fire Dispatch Simulator - Prisma schema
+// Database-driven rules, event-sourced timeline, capability-based dispatch
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----- Auth -----
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  passwordHash String
+  name      String
+  role      String   @default("dispatcher") // dispatcher | admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions  Session[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenId   String?  // optional: revoke by token
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+// ----- Rules engine (versioned, data-driven) -----
+model RuleSet {
+  id          String   @id @default(uuid())
+  name        String
+  version     Int
+  isActive    Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+  rules       Rule[]
+  @@unique([name, version])
+}
+
+model Rule {
+  id           String   @id @default(uuid())
+  ruleSetId    String
+  ruleSet      RuleSet  @relation(fields: [ruleSetId], references: [id], onDelete: Cascade)
+  name         String
+  priority     Int      // higher = evaluated first
+  when         Json     // condition: { type?, priority?, ... }
+  recommend    Json     // { requiredCapabilities, minimumCounts?, maxTravelMinutes? }
+  scoreWeights Json?    // optional scoring weights
+  createdAt    DateTime @default(now())
+}
+
+// ----- Geography / stations -----
+model Station {
+  id        String    @id @default(uuid())
+  name      String
+  lat       Float
+  lng       Float
+  address   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  resources Resource[]
+}
+
+// ----- Resources (abstract units with capabilities) -----
+model Resource {
+  id          String   @id @default(uuid())
+  stationId   String
+  station     Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  callSign    String
+  capabilities String[] // e.g. ["PUMP","RESCUE"]
+  status      String   @default("AVAILABLE") // AVAILABLE | MOBILISED | ENROUTE | ON_SCENE | RETURNING | OFFLINE
+  currentIncidentId String?
+  etaMinutes  Int?
+  statusChangedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  assignments Assignment[]
+}
+
+// ----- Incidents and calls -----
+model Incident {
+  id                  String   @id @default(uuid())
+  type                String   // HOUSE_FIRE, VEHICLE_CRASH, etc.
+  status              String   @default("NEW") // NEW | TRIAGED | DISPATCHED | ACTIVE | CONTAINED | CLOSED
+  priority            Int      // 1-5
+  lat                 Float
+  lng                 Float
+  label               String?
+  severity            Int      @default(50) // 0-100
+  peopleInsideUnknown Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  closedAt            DateTime?
+  assignments         Assignment[]
+  eventLogs           EventLog[]
+}
+
+model Assignment {
+  id         String   @id @default(uuid())
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  resourceId String
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  role       String?
+  assignedAt DateTime @default(now())
+  @@unique([incidentId, resourceId])
+}
+
+// ----- Event log (append-only timeline) -----
+model EventLog {
+  id         String   @id @default(uuid())
+  type       String   // INCIDENT_CREATED, RESOURCE_MOBILISED, etc.
+  entityType String   // incident | resource | system
+  entityId   String
+  payload    Json     @default("{}")
+  createdAt  DateTime @default(now())
+  incidentId String?
+  incident   Incident? @relation(fields: [incidentId], references: [id], onDelete: SetNull)
+}
+
+// ----- Simulation state (single shift) -----
+model SimulationState {
+  id        String   @id @default(uuid())
+  isRunning Boolean  @default(false)
+  startedAt DateTime?
+  pausedAt  DateTime?
+  updatedAt DateTime @updatedAt
+}
