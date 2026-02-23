@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import type { Capability, DispatchRecommendation, IncidentType } from '@dispatcher/shared';
 
@@ -46,7 +47,7 @@ export class RulesService {
   }
 
   async activateRuleSet(id: string) {
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.ruleSet.updateMany({ data: { isActive: false } });
       await tx.ruleSet.update({ where: { id }, data: { isActive: true } });
     });
