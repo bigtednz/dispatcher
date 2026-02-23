@@ -1,6 +1,14 @@
 {
   "name": "dispatcher",
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "argon2",
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma"
+    ]
+  },
   "scripts": {
     "dev": "pnpm run --parallel dev",
     "dev:web": "pnpm --filter web dev",

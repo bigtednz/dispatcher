@@ -55,7 +55,7 @@ Edit **`apps\api\.env`** and set at least:
 
 Edit **`apps\web\.env.local`** (optional if defaults are fine):
 
-- `NEXT_PUBLIC_API_URL="http://localhost:4000"`
+- `NEXT_PUBLIC_API_URL="http://localhost:4000/api"`
 
 ## 6. Database: migrate and seed
 
@@ -77,12 +77,12 @@ pnpm db:seed
 pnpm dev
 ```
 
-- Web: **http://localhost:3000**
-- API: **http://localhost:4000**
+- Web: **http://localhost:3003**
+- API: **http://localhost:4000/api**
 
 ## 8. Log in
 
-- Open http://localhost:3000
+- Open http://localhost:3003
 - **Log in** → use **admin@dispatcher.local** / **admin1234** (from seed)
 - Open **Dashboard**, then (as admin) **Start shift** to run the simulation tick.
 
@@ -92,8 +92,8 @@ If you didn’t run `pnpm db:seed` or want to re-seed Waikato and rules:
 
 1. Log in as admin (or create an admin user and log in).
 2. Call the API with your JWT:
-   - **Seed Waikato:** `POST http://localhost:4000/simulation/seed-waikato` with header `Authorization: Bearer <token>`
-   - **Seed default rules:** `POST http://localhost:4000/rules/seed-default` with same header.
+   - **Seed Waikato:** `POST http://localhost:4000/api/simulation/seed-waikato` with header `Authorization: Bearer <token>`
+   - **Seed default rules:** `POST http://localhost:4000/api/rules/seed-default` with same header.
 
 You can use the browser Network tab after logging in to copy your token, or use a REST client (e.g. Thunder Client, Postman).
 
@@ -104,4 +104,4 @@ You can use the browser Network tab after logging in to copy your token, or use 
 | `Database connection refused` | Start Postgres; check `DATABASE_URL` in `apps\api\.env` (host, port, user, password, DB name). |
 | `Redis connection refused` | Start Redis (e.g. `docker start redis`); check `REDIS_URL` in `apps\api\.env`. |
 | `pnpm db:migrate:dev` fails | Ensure Postgres is running and the database `dispatcher` exists (Docker command above creates it). |
-| CORS / can’t reach API from browser | Set `WEB_ORIGIN=http://localhost:3000` in `apps\api\.env` and `NEXT_PUBLIC_API_URL=http://localhost:4000` in `apps\web\.env.local`. |
+| CORS / can’t reach API from browser | Set `WEB_ORIGIN=http://localhost:3003` in `apps\api\.env` and `NEXT_PUBLIC_API_URL=http://localhost:4000/api` in `apps\web\.env.local`. |

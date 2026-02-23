@@ -8,6 +8,7 @@ import { TravelProcessor } from './processors/travel.processor';
 import { SimulationTickProcessor } from './processors/tick.processor';
 import { RulesModule } from '../rules/rules.module';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { EventsModule } from '../events/events.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
     BullModule.registerQueue({ name: 'simulation-tick' }),
     RulesModule,
     RealtimeModule,
+    EventsModule,
   ],
   controllers: [SimulationController],
   providers: [SimulationService, TravelJobService, SeedService, TravelProcessor, SimulationTickProcessor],

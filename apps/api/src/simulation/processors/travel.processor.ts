@@ -1,9 +1,9 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { EventsService } from '../events/events.service';
-import { DispatchGateway } from '../realtime/dispatch.gateway';
+import { PrismaService } from '../../prisma.service';
+import { EventsService } from '../../events/events.service';
+import { DispatchGateway } from '../../realtime/dispatch.gateway';
 
 @Processor('travel')
 @Injectable()

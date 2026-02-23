@@ -13,10 +13,22 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     })
   );
-  app.enableCors({ origin: process.env.WEB_ORIGIN || 'http://localhost:3000', credentials: true });
+  app.setGlobalPrefix('api');
+  app.enableCors({ origin: process.env.WEB_ORIGIN || 'http://localhost:3003', credentials: true });
   const port = process.env.PORT ?? 4000;
+  const http = app.getHttpAdapter();
+  const base = `http://localhost:${port}`;
+  http.get('/', (_req: unknown, res: { setHeader: (k: string, v: string) => void; end: (s: string) => void }) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({
+      message: 'Dispatcher API',
+      api: `${base}/api`,
+      health: `${base}/api/health`,
+      web: process.env.WEB_ORIGIN || 'http://localhost:3003',
+    }));
+  });
   await app.listen(port);
-  console.log(`API listening on http://localhost:${port}`);
+  console.log(`API listening on http://localhost:${port}/api`);
 }
 
 bootstrap().catch((err) => {

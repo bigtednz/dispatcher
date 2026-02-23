@@ -5,9 +5,10 @@ import { AarService } from './aar.service';
 import { SimulationModule } from '../simulation/simulation.module';
 import { RealtimeModule } from '../realtime/realtime.module';
 import { RulesModule } from '../rules/rules.module';
+import { EventsModule } from '../events/events.module';
 
 @Module({
-  imports: [SimulationModule, RealtimeModule, RulesModule],
+  imports: [SimulationModule, RealtimeModule, RulesModule, EventsModule],
   controllers: [IncidentsController],
   providers: [IncidentsService, AarService],
   exports: [IncidentsService],

@@ -27,7 +27,7 @@ export const RESOURCES_BY_STATION: Record<string, { callSign: string; capabiliti
     { callSign: 'HAMILTON-3', capabilities: ['PUMP', 'HAZMAT_SUPPORT'] },
     { callSign: 'HAMILTON-COMMAND', capabilities: ['COMMAND'] },
   ],
-  Te Aroha: [
+  'Te Aroha': [
     { callSign: 'TE-AROHA-1', capabilities: ['PUMP', 'RESCUE'] },
     { callSign: 'TE-AROHA-2', capabilities: ['PUMP'] },
   ],

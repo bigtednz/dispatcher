@@ -25,7 +25,7 @@ describe('Incident lifecycle (e2e)', () => {
       data: { email: 'e2e@test.com', passwordHash: hash, name: 'E2E' },
     });
     const login = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/api/auth/login')
       .send({ email: 'e2e@test.com', password: 'password123' });
     token = login.body.accessToken;
     const station = await prisma.station.create({
@@ -49,7 +49,7 @@ describe('Incident lifecycle (e2e)', () => {
 
   it('creates incident', async () => {
     const res = await request(app.getHttpServer())
-      .post('/incidents')
+      .post('/api/incidents')
       .set('Authorization', `Bearer ${token}`)
       .send({
         type: 'HOUSE_FIRE',
@@ -66,14 +66,14 @@ describe('Incident lifecycle (e2e)', () => {
 
   it('lists incidents and gets one with recommendation', async () => {
     const list = await request(app.getHttpServer())
-      .get('/incidents')
+      .get('/api/incidents')
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
     expect(Array.isArray(list.body)).toBe(true);
     const id = list.body[0]?.id;
     if (!id) return;
     const get = await request(app.getHttpServer())
-      .get(`/incidents/${id}`)
+      .get(`/api/incidents/${id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
     expect(get.body.id).toBe(id);
@@ -81,18 +81,18 @@ describe('Incident lifecycle (e2e)', () => {
 
   it('dispatches and closes incident', async () => {
     const create = await request(app.getHttpServer())
-      .post('/incidents')
+      .post('/api/incidents')
       .set('Authorization', `Bearer ${token}`)
       .send({ type: 'ALARM_ACTIVATION', priority: 3, lat: -37.66, lng: 175.54 })
       .expect(201);
     const id = create.body.id;
     await request(app.getHttpServer())
-      .post(`/incidents/${id}/dispatch`)
+      .post(`/api/incidents/${id}/dispatch`)
       .set('Authorization', `Bearer ${token}`)
       .send({ assignments: [{ resourceId }] })
       .expect(201);
     const closed = await request(app.getHttpServer())
-      .post(`/incidents/${id}/close`)
+      .post(`/api/incidents/${id}/close`)
       .set('Authorization', `Bearer ${token}`)
       .expect(201);
     expect(closed.body.status).toBe('CLOSED');

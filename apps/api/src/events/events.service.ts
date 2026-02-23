@@ -22,7 +22,7 @@ export class EventsService {
         type: params.type,
         entityType: params.entityType,
         entityId: params.entityId,
-        payload: params.payload,
+        payload: params.payload as object,
         incidentId: params.incidentId,
       },
     });

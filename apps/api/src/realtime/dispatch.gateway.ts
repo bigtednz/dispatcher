@@ -10,7 +10,7 @@ import { SOCKET_NAMESPACE, SOCKET_EVENTS } from '@dispatcher/shared';
 
 @WebSocketGateway({
   namespace: SOCKET_NAMESPACE,
-  cors: { origin: process.env.WEB_ORIGIN || 'http://localhost:3000' },
+  cors: { origin: process.env.WEB_ORIGIN || 'http://localhost:3003' },
 })
 export class DispatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()

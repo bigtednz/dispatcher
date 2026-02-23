@@ -65,7 +65,7 @@ export class RulesService {
     for (const rule of active.rules) {
       const when = rule.when as RuleWhen;
       if (!matchesCondition(when, context)) continue;
-      const rec = rule.recommend as RuleRecommend;
+      const rec = rule.recommend as unknown as RuleRecommend;
       const minimumCounts: Partial<Record<Capability, number>> = {};
       if (rec.minimumCounts) {
         for (const [cap, count] of Object.entries(rec.minimumCounts)) {

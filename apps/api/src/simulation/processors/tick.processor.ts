@@ -1,9 +1,9 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { EventsService } from '../events/events.service';
-import { RulesService } from '../rules/rules.service';
+import { PrismaService } from '../../prisma.service';
+import { EventsService } from '../../events/events.service';
+import { RulesService } from '../../rules/rules.service';
 
 @Processor('simulation-tick')
 @Injectable()
@@ -30,7 +30,7 @@ export class SimulationTickProcessor extends WorkerHost {
         type: incident.type as 'HOUSE_FIRE' | 'VEHICLE_CRASH' | 'VEGETATION_FIRE' | 'MEDICAL_ASSIST' | 'HAZMAT_SUSPECTED' | 'ALARM_ACTIVATION',
         priority: incident.priority,
       });
-      const onScene = incident.assignments.filter((a) => a.resource.status === 'ON_SCENE');
+      const onScene = incident.assignments.filter((a: { resource: { status: string } }) => a.resource.status === 'ON_SCENE');
       const capabilityCounts: Record<string, number> = {};
       for (const a of onScene) {
         for (const cap of a.resource.capabilities) {
@@ -38,7 +38,7 @@ export class SimulationTickProcessor extends WorkerHost {
         }
       }
       const meetsRecommendation = recommended
-        ? (recommended.requiredCapabilities.every((cap) => (capabilityCounts[cap] ?? 0) >= (recommended.minimumCounts?.[cap] ?? 1)) ?? false)
+        ? (recommended.requiredCapabilities.every((cap) => (capabilityCounts[cap as keyof typeof capabilityCounts] ?? 0) >= (recommended.minimumCounts?.[cap as keyof typeof recommended.minimumCounts] ?? 1)) ?? false)
         : true;
 
       let newSeverity = incident.severity;

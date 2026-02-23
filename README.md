@@ -62,8 +62,8 @@ pnpm db:seed
 pnpm dev
 ```
 
-- Web: [http://localhost:3000](http://localhost:3000)
-- API: [http://localhost:4000](http://localhost:4000)
+- Web: [http://localhost:3003](http://localhost:3003)
+- API: [http://localhost:4000/api](http://localhost:4000/api)
 
 ### Optional: Postgres + Redis via Docker
 
@@ -141,7 +141,7 @@ After seed: **admin@dispatcher.local** / **admin1234** (change in production).
 3. **Set DATABASE_URL** in `apps/api/.env` (e.g. `postgresql://postgres:postgres@localhost:5432/dispatcher`).
 4. **Start Postgres and Redis** (local or Docker).
 5. **pnpm db:migrate:dev** then **pnpm db:seed**.
-6. **pnpm dev** – open http://localhost:3000, log in with **admin@dispatcher.local** / **admin1234**, go to Dashboard.
+6. **pnpm dev** – open http://localhost:3003, log in with **admin@dispatcher.local** / **admin1234**, go to Dashboard.
 7. (Admin) **Seed Waikato** and **Seed default rules** if not already done via db:seed – use API or run seed once.
 8. (Admin) **Start shift** on the dashboard to run the simulation tick loop.
 
@@ -156,7 +156,7 @@ After seed: **admin@dispatcher.local** / **admin1234** (change in production).
    BullMQ and Socket.IO may need Redis. Start Redis (e.g. `docker run -d -p 6379:6379 redis:7-alpine`) or set `REDIS_URL` in `apps/api/.env`. If Redis is down, the API may fail to start or jobs won’t run.
 
 3. **CORS or Socket.IO connection failed**  
-   If the web app can’t call the API or connect over WebSockets, set `WEB_ORIGIN` in `apps/api/.env` to `http://localhost:3000` and `NEXT_PUBLIC_API_URL` in `apps/web/.env.local` to `http://localhost:4000`. Use the same origin/URL when using a different host/port.
+   If the web app can’t call the API or connect over WebSockets, set `WEB_ORIGIN` in `apps/api/.env` to `http://localhost:3003` and `NEXT_PUBLIC_API_URL` in `apps/web/.env.local` to `http://localhost:4000/api`. Use the same origin/URL when using a different host/port.
 
 ## Connect to GitHub
 

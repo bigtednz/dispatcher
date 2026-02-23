@@ -76,8 +76,9 @@ export default function DashboardPage() {
   }, [fetchAll]);
 
   useEffect(() => {
-    const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const socket = io(`${url}${SOCKET_NAMESPACE}`, { transports: ['websocket'], auth: { token } });
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    const origin = apiUrl.replace(/\/api\/?$/, '') || 'http://localhost:4000';
+    const socket = io(`${origin}${SOCKET_NAMESPACE}`, { transports: ['websocket'], auth: { token } });
     socketRef.current = socket;
     socket.on(SOCKET_EVENTS.INCIDENT_UPDATED, () => fetchAll());
     socket.on(SOCKET_EVENTS.RESOURCE_UPDATED, () => fetchAll());
@@ -108,8 +109,12 @@ export default function DashboardPage() {
     } catch (_) {}
   }
 
-  if (!token && typeof window !== 'undefined' && !localStorage.getItem('dispatcher_token')) {
-    return null;
+  if (typeof window !== 'undefined' && token === null && !localStorage.getItem('dispatcher_token')) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-slate-400">Redirecting to login…</p>
+      </div>
+    );
   }
 
   return (
