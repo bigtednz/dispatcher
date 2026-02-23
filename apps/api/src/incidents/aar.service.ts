@@ -29,7 +29,7 @@ export class AarService {
       peopleInsideUnknown: incident.peopleInsideUnknown,
     });
 
-    const sent = incident.assignments.map((a) => ({
+    const sent = incident.assignments.map((a: (typeof incident.assignments)[number]) => ({
       resourceId: a.resource.id,
       callSign: a.resource.callSign,
       capabilities: a.resource.capabilities as Capability[],

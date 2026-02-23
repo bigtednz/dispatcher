@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { RulesService } from '../rules/rules.service';
 import { EventsService } from '../events/events.service';
@@ -78,7 +79,7 @@ export class IncidentsService {
     if (!incident) throw new NotFoundException('Incident not found');
     if (incident.status === 'CLOSED') throw new Error('Cannot dispatch closed incident');
 
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       for (const a of assignments) {
         await tx.assignment.upsert({
           where: {
@@ -136,7 +137,7 @@ export class IncidentsService {
     const incident = await this.prisma.incident.findUnique({ where: { id }, include: { assignments: true } });
     if (!incident) throw new NotFoundException('Incident not found');
 
-    await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.incident.update({
         where: { id },
         data: { status: 'CLOSED', closedAt: new Date() },
