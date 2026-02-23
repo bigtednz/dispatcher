@@ -29,6 +29,19 @@ Use this list to track setup and next steps. Check off items as you go.
 
 ---
 
+## If the API crashes on Railway
+
+1. **View logs** – Railway project → API service → **Deployments** → click latest → **View logs** (or **Logs** tab). Look for `[Startup] Missing env:` or `[Startup] Fatal:` and the error below.
+2. **Env vars** – In the API service, **Variables** must include:
+   - `DATABASE_URL` (from Railway Postgres – use **Variables** → **Reference** from the Postgres service if needed).
+   - `REDIS_URL` (from Railway Redis – same, reference the Redis service).
+   - `JWT_SECRET` (any string ≥ 32 characters).
+   - `WEB_ORIGIN` (your Web app URL, e.g. `https://your-app.up.railway.app`).
+3. **Migrations** – The API now runs `prisma migrate deploy` before starting. If the DB is empty or schema is wrong, the deploy will fail; logs will show the Prisma error.
+4. **Postgres/Redis** – Ensure the Postgres and Redis services are in the same project and **running**. The API needs both to start.
+
+---
+
 ## After deploy
 
 - [ ] **Seed production DB** (if empty) – e.g. run `pnpm db:seed` via Railway CLI/one-off, or call `POST /api/simulation/seed-waikato` and `POST /api/rules/seed-default` (admin).

@@ -6,7 +6,7 @@
     "build": "nest build && prisma generate",
     "dev": "nest build && npx concurrently \"nest build --watch\" \"nodemon --delay 3 --watch dist -e js --exec node dist/apps/api/src/main.js\"",
     "start": "node dist/apps/api/src/main.js",
-    "start:prod": "node dist/apps/api/src/main.js",
+    "start:prod": "prisma migrate deploy && node dist/apps/api/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "vitest run",
     "test:watch": "vitest",
