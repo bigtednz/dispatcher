@@ -17,7 +17,7 @@ type IncidentDetail = {
   createdAt: string;
   closedAt?: string;
   recommended?: { requiredCapabilities: string[]; minimumCounts?: Record<string, number>; explanation: string };
-  assignments?: { resource: { callSign: string; capabilities: string[] } }[];
+  assignments?: { resourceId: string; resource: { id: string; callSign: string; capabilities: string[] } }[];
 };
 
 type EventEntry = { id: string; type: string; entityType: string; entityId: string; payload: Record<string, unknown>; createdAt: string };
@@ -30,7 +30,10 @@ export default function IncidentPage() {
   const [eventLog, setEventLog] = useState<EventEntry[]>([]);
 
   useEffect(() => {
-    incidents.get(id).then(setIncident).catch(() => setIncident(null));
+    incidents
+      .get(id)
+      .then((data) => setIncident(data as IncidentDetail | null))
+      .catch(() => setIncident(null));
     events.list(id).then((e) => setEventLog(e as EventEntry[]));
   }, [id]);
 

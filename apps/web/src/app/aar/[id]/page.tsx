@@ -22,7 +22,10 @@ export default function AARPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    incidents.aar(id).then(setAar).catch((e) => setError(e instanceof Error ? e.message : 'Failed to load AAR'));
+    incidents
+      .aar(id)
+      .then((data) => setAar(data as AAR | null))
+      .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load AAR'));
   }, [id]);
 
   if (error) return <div className="p-8 text-red-400">{error}</div>;

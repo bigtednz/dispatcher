@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { api, incidents, resources, stations, simulation, events } from '@/lib/api';
@@ -52,6 +52,21 @@ export default function DashboardPage() {
   const [eventLog, setEventLog] = useState<EventEntry[]>([]);
   const [simState, setSimState] = useState<{ isRunning: boolean }>({ isRunning: false });
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
+
+  const resourcesForMap = useMemo(
+    () =>
+      resourcesList.map((r) => {
+        const st = stationsList.find((s) => s.id === r.stationId);
+        return {
+          id: r.id,
+          callSign: r.callSign,
+          stationId: r.stationId,
+          status: r.status,
+          station: st ? { lat: st.lat, lng: st.lng } : undefined,
+        };
+      }),
+    [resourcesList, stationsList]
+  );
 
   const fetchAll = useCallback(async () => {
     if (!token) return;
@@ -166,7 +181,7 @@ export default function DashboardPage() {
           <div className="flex-1 min-h-0 relative">
             <MapView
               stations={stationsList}
-              resources={resourcesList}
+              resources={resourcesForMap}
               incidents={incidentsList}
               selectedId={selectedId}
               onSelect={setSelectedId}
@@ -210,7 +225,10 @@ function DispatchPanel({ incidentId, onClose }: { incidentId: string; onClose: (
   const [dispatching, setDispatching] = useState(false);
 
   useEffect(() => {
-    incidents.get(incidentId).then(setIncident).catch(() => setIncident(null));
+    incidents
+      .get(incidentId)
+      .then((data) => setIncident(data as typeof incident))
+      .catch(() => setIncident(null));
     resources.list().then((r) => setResourcesList(r as Resource[]));
   }, [incidentId]);
 

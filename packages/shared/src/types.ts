@@ -1,4 +1,4 @@
-import type { Capability, IncidentType, IncidentStatus, ResourceStatus, EventType } from './enums.js';
+import type { Capability, IncidentType, IncidentStatus, ResourceStatus, EventType } from './enums';
 
 export interface Location {
   lat: number;

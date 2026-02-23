@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CAPABILITIES, INCIDENT_TYPES, RESOURCE_STATUSES } from './enums.js';
+import { CAPABILITIES, INCIDENT_TYPES, RESOURCE_STATUSES } from './enums';
 
 export const capabilitySchema = z.enum(CAPABILITIES);
 export const incidentTypeSchema = z.enum(INCIDENT_TYPES);
